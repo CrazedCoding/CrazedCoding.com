@@ -1,5 +1,5 @@
 
-<h1>CrazedCoding.com LLC's Video Processing Server</h1>
+<h1>CrazedCoding.com Video Processing Server</h1>
 <img src="./default.png">
 <h2>About</h2>
 <p>The sole purpose of this repo is to serve as a platform for the thesis work of the author. So far, it is the culmination of a combination of academic and entrepreneurial projects developed over the past several years.</p>
