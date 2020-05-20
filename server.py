@@ -38,7 +38,8 @@ import json
 
 #Video Processing
 import numpy as np
-import processing
+import audio_processing
+import video_processing
 import torch
 import torchvision
 from torch.multiprocessing import set_start_method, Process, Queue

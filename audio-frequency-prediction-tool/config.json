@@ -1,0 +1,46 @@
+{
+	"data": {
+		"sequence_length": 50,
+		"train_test_split": 0.5
+	},
+	"training": {
+		"epochs": 1,
+		"batch_size": 32
+	},
+	"model": {
+		"loss": "mse",
+		"optimizer": "adam",
+		"layers": [
+			{
+				"type": "lstm",
+				"neurons": 2048,
+				"input_timesteps": 49,
+				"input_dim": 64,
+				"return_seq": true
+			},
+			{
+				"type": "dropout",
+				"rate": 0.2
+			},
+			{
+				"type": "lstm",
+				"neurons": 1024,
+				"return_seq": true
+			},
+			{
+				"type": "lstm",
+				"neurons": 512,
+				"return_seq": false
+			},
+			{
+				"type": "dropout",
+				"rate": 0.2
+			},
+			{
+				"type": "dense",
+				"neurons": 64,
+				"activation": "linear"
+			}
+		]
+	}
+}

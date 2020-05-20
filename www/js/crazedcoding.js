@@ -927,12 +927,12 @@ function loadAlgorithm() {
                 {
                     "name": `image-context`,
                     "width": {
-                        "type": OpenGLDimension.Type.NEXT_LOWEST_POWER_OF_TWO//,
-                        //"exact_value": "return 512"
+                        "type": OpenGLDimension.Type.EXACT,
+                        "exact_value": "return 512"
                     },
                     "height": {
-                        "type": OpenGLDimension.Type.NEXT_LOWEST_POWER_OF_TWO//,
-                        //"exact_value": "return 512"
+                        "type": OpenGLDimension.Type.EXACT,
+                        "exact_value": "return 512"
                     },
                     "depth_test": false,
                     "images": []
@@ -968,16 +968,6 @@ function loadAlgorithm() {
                         },
                         {
                             "type": `float`,
-                            "name": `window_width`,
-                            "value": `return window.innerWidth`
-                        },
-                        {
-                            "type": `float`,
-                            "name": `window_height`,
-                            "value": `return window.innerHeight`
-                        },
-                        {
-                            "type": `float`,
                             "name": `time`,
                             "value": `if(!this.timeUniformStart) this.timeUniformStart = ((new Date()).getTime())/1E3;
             return ((new Date()).getTime())/1E3-this.timeUniformStart;`
@@ -996,12 +986,11 @@ function loadAlgorithm() {
         #define PI 3.14159265359
         #define E 2.7182818284
         #define GR 1.61803398875
+        #define MAX_DIM (max(width,height))
+        //--------------------------------------------------
 
-        //-----------------UTILITY MACROS-----------------
-
-        #define time ((sin(float(__LINE__))*GR/2.0/PI+GR/PI)*time+100.0)
+        #define time ((sin(float(__LINE__))/PI/GR+1.0)*time/PI)
         #define flux(x) (vec3(cos(x),cos(4.0*PI/3.0+x),cos(2.0*PI/3.0+x))*.5+.5)
-        #define rotatePoint(p,n,theta) (p*cos(theta)+cross(n,p)*sin(theta)+n*dot(p,n) *(1.0-cos(theta)))
 
         float saw(float x)
         {
@@ -1009,91 +998,148 @@ function loadAlgorithm() {
             float m = mod(abs(x), 1.0);
             return f*(1.0-m)+(1.0-f)*m;
         }
-        vec2 saw(vec2 x)
+
+        vec2 saw(vec2 x) { return vec2(saw(x.x), saw(x.y)); }
+        vec3 saw(vec3 x) { return vec3(saw(x.x), saw(x.y), saw(x.z)); }
+        vec4 saw(vec4 x) { return vec4(saw(x.x), saw(x.y), saw(x.z), saw(x.w)); }
+
+
+        mat2 rotate(float x) { return mat2(cos(x), sin(x), sin(x), -cos(x)); }
+
+        float cross2d( in vec2 a, in vec2 b ) { return a.x*b.y - a.y*b.x; }
+
+        vec2 invBilinear( in vec2 p, in vec2 a, in vec2 b, in vec2 c, in vec2 d )
         {
-            return vec2(saw(x.x), saw(x.y));
+            vec2 res = vec2(-1.0);
+
+            vec2 e = b-a;
+            vec2 f = d-a;
+            vec2 g = a-b+c-d;
+            vec2 h = p-a;
+                
+            float k2 = cross2d( g, f );
+            float k1 = cross2d( e, f ) + cross2d( h, g );
+            float k0 = cross2d( h, e );
+            
+            // if edges are parallel, this is a linear equation. Do not this test here though, do
+            // it in the user code
+            if( abs(k2)<0.001 )
+            {
+                float v = -k0/k1;
+                float u  = (h.x*k1+f.x*k0) / (e.x*k1-g.x*k0);
+                //if( v>0.0 && v<1.0 && u>0.0 && u<1.0 ) 
+                    res = vec2( u, v );
+            }
+            else
+            {
+                // otherwise, it's a quadratic
+                float w = k1*k1 - 4.0*k0*k2;
+                //if( w<0.0 ) return vec2(-1.0);
+                w = sqrt( w );
+
+                float ik2 = 0.5/k2;
+                float v = (-k1 - w)*ik2;// if( v<0.0 || v>1.0 ) v = (-k1 + w)*ik2;
+                float u = (h.x - f.x*v)/(e.x + g.x*v);
+                //if( u<0.0 || u>1.0 || v<0.0 || v>1.0 ) return vec2(-1.0);
+                res = vec2( u, v );
+            }
+            return (res);
+        }
+        float smooth_floor(float x)
+        {
+            return floor(x)+smoothstep(.75, 1., fract(x));
+        }
+        vec2 flower(vec2 p)
+        {
+            p *= rotate(time);
+            float rots = smooth_floor(4.+8.*saw(time/E))+1./MAX_DIM;
+            float angle = atan(-p.y, -p.x);
+            float radius = length(p);
+            angle = floor(((angle/PI)*.5+.5)*rots);
+        
+        
+            vec2 a = vec2(1., 0.);
+            vec2 b = vec2(1., 1./MAX_DIM);
+            vec2 c = vec2(0., 1./MAX_DIM);
+            vec2 d = vec2(0., -1./MAX_DIM);
+            
+            b *= rotate(angle/rots*2.*PI);
+            angle += 1.;
+            a *= rotate(angle/rots*2.*PI);
+            
+            return (invBilinear( p, a, b, c, d )*2.-1.)/vec2(rots/2., 1.);
         }
 
-        vec3 saw(vec3 x)
+        float draw(vec2 uv)
         {
-            return vec3(saw(x.x), saw(x.y), saw(x.z));
+            return (1.-smoothstep(0., .1, abs(uv.x-.5)))*(1.-smoothstep(0.9, 1., abs(uv.y)));
         }
-
         void main()
         {
             vec2 p = (vPosition)*2.-1.;
-            p.x *= max(window_width/window_height, 1.);
-            p.y *= max(window_height/window_width, 1.);
+            
+            p.x *= min(width/height, 1.);
+            p.y *= min(height/width, 1.);
+
+            p = p*.5+.5;
             vec2 uv = p;
-            vec3 eye = vec3(cos(time), sin(time*.5), sin(time))*2.;
-            vec3 look = vec3(0.0, 0.0, 0.0);
-            vec3 up = vec3(0.0, 1.0, 0.0);
-            vec3 foward = normalize(look-eye);
-            vec3 right = normalize(cross(foward, up));
-            up = normalize(cross(right, foward));
-            vec3 ray = normalize(foward+uv.x*right+uv.y*up);
-            
-            const float outerCount = 8.0;
-            const float innerCount = 4.0;
-                
-            float map = 0.0;
-            float sum = 0.0;
-            
-            for(float i = 0.0; i < outerCount; i+=1.0)
-            {
-                float theta1 = i/outerCount*2.0*PI;
-                
-                for(float j = 0.0; j < innerCount; j+=1.0)
-                {
-                    float theta2 = theta1+j/innerCount*PI*2.0;
+            vec2 uv0 = p;
+            vec3 col = vec3(0.);
 
+            const float max_iterations = 8.;
+            
+    float nature = smoothstep(.45, .55, saw(time/GR/E));
+    vec2 fuv = flower(uv0*2.-1.);
+    fuv.x = fuv.x*.5+.5;
+    fuv.y = 1.-(fuv.y*.5+.5);
+    //uv =  uv*(1.-nature)+fuv*nature;
+    
+            p = uv;
+            float map = 0.;
+            for(float f = 0.; f < max_iterations; f+=1.){
+                float iteration = (f/max_iterations+1.);
+                float angle = sin(time+sin(time*iteration)/PI)/PI/GR-1.*PI/5.;//floor(((angle/PI)*.5+.5)*rots);
+
+                vec2 a = vec2(1., 1.);
+                vec2 b = vec2(0., 1.);
+                vec2 c = vec2(0., 0.);
+                vec2 d = vec2(1., 0.);
+                
+                p = p*2.-1.;
+                
+                vec2 s = vec2(.75);
+                vec2 o = vec2(.5, 0.);
+                mat2 m = rotate(angle);
+                
+                a = a*2.-1.; b = b*2.-1.; c = c*2.-1.; d = d*2.-1.;
+                
+                a = a*m; b = b*m; c = c*m; d = d*m;
+                a *= s; b *= s; c *= s; d *= s;
+                a += o; b += o; c += o; d += o;
+                //= a*.5+.5; b = b*.5+.5; c = c*.5+.5; d = d*.5+.5;
+
+                
+                /*
+                a = a*2.-1.; b = b*2.-1.; c = c*2.-1.; d = d*2.-1.;
+                */
+
+                vec2 a2 = a*vec2(-1., 1.);
+                vec2 b2 = b*vec2(-1., 1.);
+                vec2 c2 = c*vec2(-1., 1.);
+                vec2 d2 = d*vec2(-1., 1.);
+                if(p.x > 0.)
+                    p = (invBilinear( p, a, b, c, d ));
+                else
+                    p = (invBilinear( p, a2, b2, c2, d2 ));
                     
-                    float omega1 = theta1;
-                    float omega2 = theta2+time*sign(cos(i*PI));
-                    
-                    
-                    vec3 p1 = vec3(cos(omega1)*sin(omega2),
-                                sin(omega1)*sin(omega2),
-                                cos(omega2));
-                                
-                    vec3 p2 = vec3(cos(omega1)*sin(omega2+PI/8.0),
-                                sin(omega1)*sin(omega2+PI/8.0),
-                                cos(omega2+PI/8.0));
-                    
-                    vec3 ray2 = normalize(p2-p1);
-                    
-                    float a = dot(ray,ray);
-                    float b = dot(ray,ray2);
-                    float c = dot(ray2,ray2);
-                    float d = dot(ray,eye-p1);
-                    float e = dot(eye-p1,ray2);
-                    
-                    float t1 = (b*e-c*d)/(a*c-b*b);
-                    float t2 = (a*e-b*d)/(a*c-b*b);
-                    
-                    float dist = length((eye+ray*t1)-(p1+ray2*t2));
-                    
-                    float lineWidth = 50.0/max(window_width, window_height);
-                    
-                    float lineLength = 2.5+.5*sin(time);
-                    
-                    float isFoward = (sign(t1)*.5+.5);
-                    
-                    
-                    
-                        float sides = (1.0-smoothstep(0.0, lineWidth, dist));
-                        float ends = (1.0-smoothstep(0.0, lineLength, abs(t2)));
-                        float line = sides*ends*isFoward;
-                        
-                        map += (1.-map)*line;
-                        sum += 1.0*line*isFoward;
-                }
+
+                
+                //map += 1.-smoothstep((f)/max_iterations, (f+1.)/max_iterations, (abs(p.x+p.y)));
+                map += draw(p);//1.-smoothstep((f)/max_iterations, (f+1.)/max_iterations, (abs(p.y-.5)));
             }
-            
-            gl_FragColor = vec4(flux(PI*map/sum+saw(time)*2.*PI/3.0)*clamp(map, 0.0, 1.0), 1.0);
-        }
 
-        
+            gl_FragColor = vec4(saw(map)*flux(time+map*PI+p.x+p.y), 1.0 );
+        }
         `,
                     "vert_code": `precision highp float;
         precision highp int;
