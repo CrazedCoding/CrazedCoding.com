@@ -1,10 +1,10 @@
 {
 	"data": {
-		"sequence_length": 50,
+		"sequence_length": 5,
 		"train_test_split": 0.5
 	},
 	"training": {
-		"epochs": 1,
+		"epochs": 32,
 		"batch_size": 32
 	},
 	"model": {
@@ -13,9 +13,9 @@
 		"layers": [
 			{
 				"type": "lstm",
-				"neurons": 2048,
-				"input_timesteps": 49,
-				"input_dim": 64,
+				"neurons": 1024,
+				"input_timesteps": 4,
+				"input_dim": 1024,
 				"return_seq": true
 			},
 			{
@@ -29,7 +29,7 @@
 			},
 			{
 				"type": "lstm",
-				"neurons": 512,
+				"neurons": 1024,
 				"return_seq": false
 			},
 			{
@@ -38,7 +38,7 @@
 			},
 			{
 				"type": "dense",
-				"neurons": 64,
+				"neurons": 1024,
 				"activation": "linear"
 			}
 		]

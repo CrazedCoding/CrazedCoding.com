@@ -1,28 +1,3 @@
-/* 
- * Author = Philip Cooksey
- * Edited = September 2018
- * Website = https://github.com/pcooksey/bibtex-js
- * Credit = Henrik Mühe
- *
- * Issues:
- *  no comment handling within strings
- *  no string concatenation
- *  no variable values yet
- 
- * Grammar implemented here:
- *  bibtex -> (string | preamble | comment | entry)*;
- *  string -> '@STRING' '{' key_equals_value '}';
- *  preamble -> '@PREAMBLE' '{' value '}';
- *  comment -> '@COMMENT' '{' value '}';
- *  entry -> '@' key '{' key ',' key_value_list '}';
- *  key_value_list -> key_equals_value (',' key_equals_value)*;
- *  key_equals_value -> key '=' value;
- *  value -> value_quotes | value_braces | key;
- *  value_quotes -> '"' .*? '"'; // not quite
- *  value_braces -> '{' .*? '"'; // not quite
- *
- */
-
 var insert_id_tage = true;
 function BibtexParser() {
     this.pos = 0;
