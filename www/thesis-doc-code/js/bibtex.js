@@ -1,4 +1,4 @@
-var insert_id_tage = true;
+var insert_id_page = true;
 function BibtexParser() {
     this.pos = 0;
     this.input = "";
@@ -420,7 +420,7 @@ function BibtexDisplay() {
         "LAST": 3,
         "FIRST_INITIAL": 4
     });
-    this.displayAuthor = function(string, format) {
+    this.displayAuthor = function(string, format, key= "") {
         string = string.replace(/[ ]*[\n\t][ ]*/g, " ");
         string = string.replace(/[ ]+/g, " ");
         // Split string by 'and' keeping {words and words} together
@@ -435,7 +435,7 @@ function BibtexDisplay() {
         conjunction = format.attr('conjunction') ? format.attr('conjunction') : ', and';
         conjunction = "<span class='bibtex_js_conjunction'>" + conjunction + "</span>";
 
-        var newString = "";
+        var newString = ""+key;
         for (i = 0; i < searchLength; i++) {
             // Split string by ',' keeping {words, and words} together
             var name = this.getName(arrayString[i].split(/\,\s?(?![^\{]*\})/));
@@ -476,7 +476,8 @@ function BibtexDisplay() {
         return newString;
     }
 
-    this.createTemplate = function(entry, output) {
+    this.createTemplate = function(entry, output, entry_index) {
+        entry["entry_index"] = entry_index
         // Check if bibtex keys are limiting output (bibtexkeys="key1|key2|...|keyN")
         if (output[0].attributes.length > 1) {
             for (var i = 0, attrs = output[0].attributes, n = attrs.length; i < n; ++i) {
@@ -566,7 +567,11 @@ function BibtexDisplay() {
                 continue;
             }
 
-            if (key == "AUTHOR") {
+            console.log(tpl)
+            if (key == "ENTRY_INDEX") {
+                value = ""+entry_index;
+            }
+            else if (key == "AUTHOR") {
                 var format = tpl.find("span:not(a)." + key.toLowerCase());
                 if (format.length)
                     value = this.displayAuthor(value, format);
@@ -594,7 +599,7 @@ function BibtexDisplay() {
             });
         }
         tpl.addClass("bibtexentry");
-        if(insert_id_tage)
+        if(insert_id_page)
             tpl.attr('id', entry["BIBTEXKEY"])
         else
             tpl.attr('href', "#"+entry["BIBTEXKEY"])
@@ -823,11 +828,12 @@ function BibtexDisplay() {
             }
         } else {
             // iterate over bibTeX entries and add them to template
+            var entry_index = 1
             for (var entryKey in entries) {
                 var entry = entries[entryKey];
                 // Checking if web is set to visible
                 if (!entry["WEB"] || entry["WEB"].toUpperCase() != "NO") {
-                    var tpl = this.createTemplate(entry, output);
+                    var tpl = this.createTemplate(entry, output, entry_index);
                     // Check if template was created
                     if (tpl) {
                         structure.find(".templates").append(tpl);
@@ -838,6 +844,7 @@ function BibtexDisplay() {
                         }
                     }
                 }
+                entry_index++;
             }
             return structure;
         }
@@ -866,10 +873,11 @@ function BibtexDisplay() {
             this.createStructure(structure, output, entriesArray);
         } else {
             // iterate over bibTeX entries
+            var entry_index = 1
             for (var entryKey in entries) {
                 var entry = entries[entryKey];
 
-                tpl = this.createTemplate(entry, output);
+                tpl = this.createTemplate(entry, output, entry_index);
                 // Check if template was created
                 if (tpl) {
                     output.append(tpl);
@@ -879,6 +887,7 @@ function BibtexDisplay() {
                         callback(tpl[0]);
                     }
                 }
+                entry_index++;
             }
         }
         // remove old entries
@@ -887,13 +896,13 @@ function BibtexDisplay() {
 
 }
 
-function bibtex_js_draw() {
+function bibtex_js_draw(bibstring) {
     $(".bibtex_template").hide();
     //Gets the BibTex files and adds them together
-    var bibstring = "";
     var requests = [];
-    if ($("#bibtex_input").length) {
-        bibstring += $("#bibtex_input").val();
+    if (!bibstring && $("#bibtex_input").length) {
+        bibstring = "";
+        bibstring = $("#bibtex_input").val();
     }
     // Create request for bibtex files
     $('bibtex').each(function(index, value) {
@@ -1091,8 +1100,8 @@ function BibTeXSearcher() {
     }
 }
 
-function createWebPage(new_template, set_id) {
-    insert_id_tage = set_id;
+function createWebPage(new_template, set_id, bibstring) {
+    insert_id_page = set_id;
     if(new_template)
         current_template = new_template;
     // draw bibtex when loaded
@@ -1101,7 +1110,7 @@ function createWebPage(new_template, set_id) {
         if ($(".bibtex_template").length == 0) {
             $("body").append(current_template);
         }
-        bibtex_js_draw();
+        bibtex_js_draw(bibstring);
     });
 }
 
@@ -1257,14 +1266,29 @@ function generateList(object, bibtexField) {
     }
 }
 
-var current_template = "<div class=\"bibtex_template\">" +
-    "<div id=\"if author\"class=\"if author\" style=\"font-weight: bold;\">\n" +
-    "<span class=\"if year\">\n" +
-    "<span class=\"year\"></span>,\n" +
-    "</span><span class=\"author\"></span>\n" +
-    "<span class=\"if url\" style=\"margin-left: 20px\">" +
-    "</span>\n</div>\n<div style=\"margin-left: 10px; margin-bottom:5px;\">\n" +
-    "<span class=\"title\"></span>\n</div><br></div>";
+var current_template = `
+<div class="if bibtex_template" style="display: none; text-align:left; line-height:150%;">
+    <div>
+    [<span class="entry_index"></span>]
+      <span class="author"></span>,
+      "<span class="title"></span>",
+      <span class="if journal"><em><span class="journal"></span></em>,</span>
+      <span class="if booktitle">In <em><span class="booktitle"></span></em>,</span>
+      <span class="if editor"><span class="editor"></span> (editors),</span>
+      <span class="if publisher"><em><span class="publisher"></span></em>,</span>
+      <span class="if !journal number">Technical report <span class="number"></span>,</span>
+      <span class="if institution"><span class="institution"></span>,</span>
+      <span class="if address"><span class="address"></span>,</span>
+      <span class="if volume"><span class="volume"></span>,</span>
+      <span class="if journal number">(<span class="number"></span>),</span>
+      <span class="if pages"> pages <span class="pages"></span>,</span>
+      <span class="if url"><span class="url"></span></span>
+      <span class="if month"><span class="month"></span>,</span>
+      <span class="if year"><span class="year"></span>.</span>
+      <span class="if note"><span class="note"></span>.</span>
+    </div>
+    <br>
+</div>`;
 
 
 var latex_to_unicode = {

@@ -3,7 +3,8 @@ import math
 import numpy as np
 import datetime as dt
 from numpy import newaxis
-from keras.layers import Dense, Activation, Dropout, LSTM, BatchNormalization, Conv1D, TimeDistributed, MaxPooling1D, Flatten
+from keras.layers import Dense, Activation, Dropout, LSTM, Conv1D, TimeDistributed, MaxPooling1D, Flatten
+from keras.layers.normalization import BatchNormalization
 from keras.models import Sequential, load_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.utils import plot_model
@@ -18,7 +19,7 @@ class AudioModel():
 
 	def build_model(self, configs):
 		# self.model.add(batch_normed)
-		self.model.add(BatchNormalization())
+		# self.model.add(BatchNormalization())
 		for layer in configs['model']['layers']:
 			neurons = layer['neurons'] if 'neurons' in layer else None
 			dropout_rate = layer['rate'] if 'rate' in layer else None
@@ -38,10 +39,10 @@ class AudioModel():
 			if layer['type'] == 'dropout':
 				self.model.add(Dropout(dropout_rate))
 
-		plot_model(self.model, to_file="image.png", show_shapes=True)
 		self.model.compile(loss=configs['model']['loss'], optimizer=configs['model']['optimizer'])
 
 		print('[Model] Model Compiled')
+		# plot_model(self.model, to_file="image.png", show_shapes=True, show_layer_names=True,rankdir='TB')
 
 	def train(self, x, y, epochs, batch_size, save_dir):
 		print('[Model] Training Started')

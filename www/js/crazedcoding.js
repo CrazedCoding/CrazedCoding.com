@@ -1138,7 +1138,7 @@ function loadAlgorithm() {
                 map += draw(p);//1.-smoothstep((f)/max_iterations, (f+1.)/max_iterations, (abs(p.y-.5)));
             }
 
-            gl_FragColor = vec4(saw(map)*flux(time+map*PI+p.x+p.y), 1.0 );
+            gl_FragColor = vec4(saw(map)*flux(time+map*PI+p.x+p.y), saw(map) );
         }
         `,
                     "vert_code": `precision highp float;

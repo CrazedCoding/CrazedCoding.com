@@ -112,7 +112,7 @@ def main():
 
 			# Or if you want the real and imaginary complex components separately,
 			# freqs = mag * np.cos(phase) + mag * np.sin(phase)*1j
-			print("Max mag {}".format(freqs.max()))
+			# print("Max mag {}".format(freqs.max()))
 			# print("Max angle {}".format(phase.max()))
 			# import pdb; pdb.set_trace()
 			
@@ -155,7 +155,7 @@ def main():
 				for k in range(0, len(args.targets)): 
 					total_weight += weight_function(i, k)/len(args.targets)
 				weight = weight_function(i, j)/total_weight
-				print("Weight: {}".format(weight))
+				# print("Weight: {}".format(weight))
 				final_target[i] += target_xy[j][0][i]*weight
 
 		print("Using current NN model to do point-by-point prediction of the merged target audio files.")
