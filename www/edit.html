@@ -1,0 +1,223 @@
+<div class="row connected_content out-of-sight" id="edit">
+    <div class="split row left" style="text-align:center;">
+        <div class="col-0 col-sm-0 col-md-0 col-lg-1">
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-10">
+            <br>
+            <h1 class="read_only"
+                style="padding: 14px; text-align:center; color:#fff; font-size: 14px !important; width:max-content; display: inline-block; background-color: rgba(0,0,0,.75); border-radius: 12px; border: 1px solid #fff !important;">
+                <a style="color:#FFF!important; ">Algorithm Preview:</a>
+            </h1>
+            <br>
+            <h1 class="read_only"
+                style="text-align:center; padding-top: 14px; padding-bottom: 14px; color:#fff; font-size: 14px !important; width:auto; background-color: rgba(0,0,0,.75); border-radius: 12px; border: 1px solid #fff !important;">
+                <div class="row iframe_preview">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                        <div style="position:absolute;width:100%;height:100%;font-size: 32px !important;color: #0f0; z-index: 1;"
+                            class="loading-indicator blink-white">Loading...</div>
+                        <iframe sandbox="allow-scripts allow-same-origin" allow="microphone"
+                            style="border:1px solid #fff; width: 100%; height: 100%;" id="edit_preview_iframe"></iframe>
+                    </div>
+                </div>
+                <br>
+                <button style="background-color: rgba(0,0,0,.75);" type="button" onclick="state.compile_algorithm()"
+                    class="btn btn-outline-success mx-auto">Compile</button>
+                <button style="background-color: rgba(0,0,0,.75);" type="button"
+                    onclick="state.fork_algorithm(state.get_ui_algorithm().name)"
+                    class="btn btn-outline-success mx-auto">Fork</button>
+                <button style="background-color: rgba(0,0,0,.75);" type="button"
+                    onclick="state.goto_algorithm_preview(state.get_ui_algorithm().name.toLowerCase().replace(' ', '_'))"
+                    class="btn btn-outline-primary mx-auto">Preview</button>
+                <button style="background-color: rgba(0,0,0,.75);" type="button" onclick="state.download_algorithm()"
+                    class="btn btn-outline-primary mx-auto">Download</button>
+                <button style="border-color: pink !important; background-color: rgba(0,0,0,.75);" type="button" onclick="state.love()"
+                    class="btn btn-outline-success mx-auto">Love</button>
+                <button style="background-color: rgba(0,0,0,.75); border-color:brown;" type="button" onclick="state.hate()"
+                    class="btn btn-outline-danger mx-auto">Hate</button>
+                <button style="background-color: rgba(0,0,0,.75);" type="button" onclick="state.save_algorithm()"
+                    class="owned-content logged_in_content btn btn-outline-success mx-auto">Save</button>
+                <button style="background-color: rgba(0,0,0,.75);" type="button" onclick="state.delete_algorithm()"
+                    class="owned-content logged_in_content btn btn-outline-danger mx-auto">Delete</button>
+            </h1>
+            <!---#ALGORITHM_COMMENTS#--->
+        </div>
+        <div class="col-0 col-sm-0 col-md-0 col-lg-1">
+        </div>
+    </div>
+    <div class="split row right" style="text-align: center;">
+        <div class="col-0 col-sm-0 col-md-0 col-lg-1">
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-10">
+            <br>
+            <!---#ALGORITHM_INFORMATION#--->
+            <h1 class="editable"
+                style="padding: 14px; text-align:center; color:#fff; font-size: 14px !important; width:max-content; display: inline-block; background-color: rgba(0,0,0,.75); border-radius: 12px; border: 1px solid #fff !important;">
+                <a>General Settings</a>
+            </h1>
+            <h1 class="editable"
+                style=" padding-top: 14px; padding-bottom: 14px; text-align:center; color:#fff; font-size: 14px !important; width:auto; background-color: rgba(0,0,0,.75); border-radius: 12px; border: 1px solid #fff !important;">
+                <div class="row owned-content">
+                    <div class="col-6 col-sm-6 col-md-6 col-lg-6" style="align-self: flex-end; text-align: right">
+                        <a>Public:</a>
+                    </div>
+                    <div class="col-2 col-sm-2 col-md-2 col-lg-2" style="text-align: left;">
+                        <div class="checkbox">
+                            <input style="float:right;" id="edit_algorithm_public_checkbox" type="checkbox" value="">
+                            <label for="edit_algorithm_public_checkbox"></label>
+                        </div>
+                    </div>
+                    <div class="col-2 col-sm-2 col-md-2 col-lg-2" style="text-align: center;">
+                    </div>
+                    <div class="col-2 col-sm-2 col-md-2 col-lg-2" style="text-align: center;">
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-6 col-sm-6 col-md-6 col-lg-6" style="align-self: flex-end; text-align: right">
+                        <a>HTML:</a>
+                    </div>
+                    <div class="col-2 col-sm-2 col-md-2 col-lg-2" style="text-align: left;">
+                        <div class="checkbox">
+                            <input style="float:right;" id="edit_algorithm_html_checkbox" onclick="state.toggle_html()"
+                                type="checkbox" value="">
+                            <label for="edit_algorithm_html_checkbox"></label>
+                        </div>
+                    </div>
+                    <div class="col-2 col-sm-2 col-md-2 col-lg-2" style="text-align: center;">
+                    </div>
+                    <div class="col-2 col-sm-2 col-md-2 col-lg-2" style="text-align: center;">
+                    </div>
+                </div>
+                <br>
+                <div id="edit_algorithm_html" class="row" style="display: none;">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                        <textarea id="edit_algorithm_html_textarea" rows="8"
+                            style="text-align:left; border: 1px solid #FFF;" placeholder="Enter html here..."
+                            value=""></textarea>
+                        <br>
+                    </div>
+                    <br>
+                    <br>
+                </div>
+                <div class="row">
+                    <div class="col-6 col-sm-6 col-md-6 col-lg-6" style="align-self: flex-end; text-align: right">
+                        <a>JavaScript:</a>
+                    </div>
+                    <div class="col-2 col-sm-2 col-md-2 col-lg-2" style="text-align: left;">
+                        <div class="checkbox">
+                            <input style="float:right;" id="edit_algorithm_javascript_checkbox"
+                                onclick="state.toggle_javascript()" type="checkbox" value="">
+                            <label for="edit_algorithm_javascript_checkbox"></label>
+                        </div>
+                    </div>
+                    <div class="col-2 col-sm-2 col-md-2 col-lg-2" style="text-align: center;">
+                    </div>
+                    <div class="col-2 col-sm-2 col-md-2 col-lg-2" style="text-align: center;">
+                    </div>
+                </div>
+                <br>
+                <div id="edit_algorithm_javascript" class="row" style="display: none;">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                        <textarea id="edit_algorithm_javascript_textarea" rows="8"
+                            style="text-align:left; border: 1px solid #FFF;"
+                            placeholder="Enter JavaScript here..."></textarea>
+                        <br>
+                    </div>
+                    <br>
+                </div>
+            </h1>
+            <h1 class="editable"
+                style="padding: 14px; text-align:center; color:#fff; font-size: 14px !important; width:max-content; display: inline-block; background-color: rgba(0,0,0,.75); border-radius: 12px; border: 1px solid #fff !important;">
+                <a>Media Files</a>
+            </h1>
+            <h1 class="editable"
+                style="padding-top: 14px; padding-bottom: 14px;text-align:center; color:#fff; font-size: 14px !important; width:auto; background-color: rgba(0,0,0,.75); border-radius: 12px; border: 1px solid #fff !important;">
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                        <a>Image Files:</a>
+                        <br>
+                    </div>
+                </div>
+                <div class="row" style="border-top: 1px solid #fff;">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                        <br>
+                        <button style="background-color: rgba(0,0,0,.75);" type="button" onclick="state.coming_soon()"
+                            class="btn btn-outline-success mx-auto">Add
+                            Image</button>
+                        <br>
+                    </div>
+                </div>
+            </h1>
+            <h1 class="editable"
+                style="padding-top: 14px; padding-bottom: 14px;text-align:center; color:#fff; font-size: 14px !important; width:auto; background-color: rgba(0,0,0,.75); border-radius: 12px; border: 1px solid #fff !important;">
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                        <a>Sound Files:</a>
+                        <br>
+                    </div>
+                </div>
+                <div class="row" style="border-top: 1px solid #fff;">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                        <br>
+                        <button style="background-color: rgba(0,0,0,.75);" type="button" onclick="state.coming_soon()"
+                            class="btn btn-outline-success mx-auto">Add
+                            Sound</button>
+                        <br>
+                    </div>
+                </div>
+            </h1>
+            <h1 class="editable"
+                style="padding-top: 14px; padding-bottom: 14px;text-align:center; color:#fff; font-size: 14px !important; width:auto; background-color: rgba(0,0,0,.75); border-radius: 12px; border: 1px solid #fff !important;">
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                        <a>Video Files:</a>
+                        <br>
+                    </div>
+                </div>
+                <div class="row" style="border-top: 1px solid #fff;">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                        <br>
+                        <button style="background-color: rgba(0,0,0,.75);" type="button" onclick="state.coming_soon()"
+                            class="btn btn-outline-success mx-auto">Add
+                            Video</button>
+                        <br>
+                    </div>
+                </div>
+            </h1>
+            <div class="editable"
+                style="padding: 14px; width:100%; text-align:center; color:#fff; font-size: 14px !important; background-color: rgba(0,0,0,.75); border-radius: 12px; border: 1px solid #fff !important;">
+                <a>WebGL Contexts</a>
+                <div id="edit_algorithm_contexts">
+                </div>
+                <button style="background-color: rgba(0,0,0,.75);" type="button" class="btn btn-outline-success mx-auto"
+                    onclick="state.add_context()">Add Context</button>
+            </div>
+            <br>
+            <div class="editable"
+                style="padding: 14px; width:100%; text-align:center; color:#fff; font-size: 14px !important; background-color: rgba(0,0,0,.75); border-radius: 12px; border: 1px solid #fff !important;">
+                <a>WebGL Programs</a>
+                <div id="edit_algorithm_programs">
+                </div>
+                <button style="background-color: rgba(0,0,0,.75);" type="button" class="btn btn-outline-success mx-auto"
+                    onclick="state.add_program()">Add Program</button>
+            </div>
+            <br>
+            <div class="editable"
+                style="padding: 14px; width:100%; text-align:center; color:#fff; font-size: 14px !important; background-color: rgba(0,0,0,.75); border-radius: 12px; border: 1px solid #fff !important;">
+                <a>WebGL Pipeline Stages</a>
+                <div id="edit_algorithm_stages">
+                </div>
+                <br>
+                <button style="background-color: rgba(0,0,0,.75);" type="button" class="btn btn-outline-success mx-auto"
+                    onclick="state.add_stage()">Add Pipeline
+                    Stage</button>
+            </div>
+            <br>
+            <br>
+        </div>
+        <div class="col-0 col-sm-0 col-md-0 col-lg-1">
+        </div>
+    </div>
+    <div class="col-0 col-sm-0 col-md-1 col-lg-2">
+    </div>
+</div>

@@ -8,6 +8,207 @@ message Auth {
   string password = 3;
   string hash = 4;
   bool validated = 5;
+  int32 quota = 6;
+}
+
+message Image {
+  string owner = 1;
+  string name = 2;
+  bytes image = 3;
+  string url = 4;
+}
+
+message Video {
+  string owner = 1;
+  string name = 2;
+  bytes video = 3;
+  string url = 4;
+}
+
+message Sound {
+  string owner = 1;
+  string name = 2;
+  bytes sound = 3;
+  string url = 4;
+}
+
+message Comment {
+  string owner = 1;
+  string message = 2;
+  int32 date = 3;
+}
+
+message MetaAlgorithm {
+  string owner = 1;
+  string name = 2;
+  string description = 3;
+  string thumbnail = 4;
+  bool public = 5;
+  int32 views = 6;
+  int32 loves = 7;
+  int32 hates = 8;
+  string created = 9;
+  string edited = 10;
+  int32 comments = 11;
+  int32 query_weight = 12;
+  repeated Sound sounds = 13;
+  repeated Image images = 14;
+  repeated Video videos = 15;
+}
+
+message Query {
+  int32 viewsPriority = 1;
+  int32 votesPriority = 2;
+  int32 createdPriority = 3;
+  int32 editedPriority = 4;
+  int32 page = 5;
+  int32 count = 6;
+  string name = 7;
+  string description = 8;
+  repeated Algorithm algorithms = 9;
+}
+
+message Catalog {
+   int32 total = 1;
+   repeated MetaAlgorithm catalog = 2;
+}
+
+message Vote {
+  string voter = 1;
+  string time = 2;
+}
+
+message OpenGLDimension {
+  enum Type {
+    UNSET = 0;
+    SCREEN_SIZE = 1;
+    NEXT_LOWEST_POWER_OF_TWO = 2;
+    NEXT_HIGHEST_POWER_OF_TWO = 3;
+    EXACT = 4;
+  }
+  Type type = 1;
+
+  string value = 2;
+
+}
+
+message OpenGLUniform {
+  enum Type {
+    UNSET = 0;
+    FLOAT = 1;
+    INT = 2;
+    BOOL = 3;
+    VEC_TWO = 4;
+    VEC_THREE = 5;
+    VEC_FOUR = 6;
+    IVEC_TWO = 7;
+    IVEC_THREE = 8;
+    IVEC_FOUR = 9;
+    BVEC_TWO = 10;
+    BVEC_THREE = 11;
+    BVEC_FOUR = 12;
+    MAT_TWO = 13;
+    MAT_THREE = 14;
+    MAT_FOUR = 15;
+    SAMPLER_TWO_D = 16;
+    SAMPLERCUBE = 17;
+  }
+  Type type = 1;
+  string name = 2;
+  string value = 3;
+}
+
+
+message OpenGLContext {
+  string name = 1;
+  
+  OpenGLDimension width = 2;
+  OpenGLDimension height = 3;
+
+  bool depth_test = 4;
+}
+
+message OpenGLProgram {
+  string name = 1;
+
+  repeated OpenGLUniform uniforms = 2;
+
+  string fragment = 3;
+  string vertex = 4;
+}
+
+message OpenGLStage {
+  enum Type {
+    UNSET = 0;
+    SHADER = 1;
+    MESH_POINTS = 2;
+    MESH_LINES = 3;
+    MESH_LINE_STRIP = 4;
+    MESH_LINE_LOOP = 5;
+    MESH_TRIANGLES = 6;
+    MESH_TRIANGLE_FAN = 7;
+    MESH_TRIANGLE_STRIP = 8;
+  }
+  string name = 1;
+
+  Type type = 2;
+  
+  string context = 3;
+  string program = 4;
+
+  string vertices = 5;
+  string indices = 6;
+}
+
+
+message OpenGLPipeline {
+  repeated OpenGLContext contexts = 1;
+  repeated OpenGLProgram programs = 2;
+  repeated OpenGLStage stages =3;
+}
+
+message AlgorithmState {
+  bool html = 1;
+  bool client = 2;
+  bool server = 3;
+}
+
+message Algorithm {
+  bool featured = 1;
+  string owner = 2;
+  string name = 3;
+  string description = 4;
+  string thumbnail = 5;
+  bool public = 6;
+
+  AlgorithmState state = 7;
+
+  string html = 8;
+  string client = 9;
+  string server = 10;
+
+  repeated Image images  = 11;
+  repeated Sound sounds  = 12;
+  repeated Video videos  = 13;
+  
+  OpenGLPipeline pipeline = 14;
+
+  int32 views = 15;
+  string edited = 16;
+  string created = 17;
+
+  repeated Vote loves = 18;
+  repeated Vote hates = 19;
+  repeated Comment comments = 20;
+}
+
+message Custom {
+  Algorithm algorithm = 1;
+  string message = 2;
+}
+
+message Error {
+   string message = 1;
 }
 
 message Captcha {
@@ -16,77 +217,53 @@ message Captcha {
   float date = 3;
 }
 
-message WordVector {
-  string word = 1;
-  repeated float vector = 2;
-}
-
-message InfoFrame {
-  float start = 1;
-  float end = 2;
-  repeated WordVector words = 3;
-  repeated float visualScores = 4;
-  repeated float querySimilarityScores = 5;
-  repeated float queryDisimilarityScores = 6;
-  repeated WordVector similarWords = 7;
-  float positiveScore = 8;
-  float negativeScore = 9;
-  string thumbnail = 10;
-}
-
-message Video {
-  bytes data = 1;
-  string clientName = 2;
-  string serverName = 3;
-  string extension = 4;
-  float duration = 5;
-  repeated InfoFrame frames = 6;
-  string thumbnail = 7;
-}
-
-message Catalog {
-  repeated WordVector positiveFeatureVectors = 1;
-  repeated WordVector negatiiveFeatureVectors = 2;
-  repeated Video videos = 3;
-  float contentOffset = 4;
-  float contentLength = 5;
-}
-
-message Query {
-  repeated string positiveKeyWords = 1;
-  repeated string negativeKeyWords = 2;
-  float contentOffset = 3;
-  float contentLength = 4;
-}
-
 
 message Message {
   enum Type {
-    AUTH = 0;
-    HALT = 1;
-    PROGRESS = 2;
-    REGISTER = 3;
-    VALIDATE = 4;
-    REQUEST_PASSWORD_RESET = 5;
-    SET_PASSWORD = 6;
-    LOGIN = 7;
-    VIDEO = 8;
-    CATALOG = 9;
-    DELETE_VIDEO = 10;
-    CAPTCHA = 11;
-    DELETE_ACCOUNT = 12;
-    ERROR = 13;
-    REQUEST_PROCESSING = 14;
-    REQUEST_USER_CATALOG = 15;
-    USER_CATALOG = 16;
-    QUERY = 17;
+    UNSET = 0;
+    AUTH = 1;
+    HALT = 2;
+    PROGRESS = 3;
+    REGISTER = 4;
+    VALIDATE = 5;
+    REQUEST_PASSWORD_RESET = 6;
+    SET_PASSWORD = 7;
+    LOGIN = 8;
+    VIDEO = 9;
+    CATALOG = 10;
+    DELETE_VIDEO = 11;
+    CAPTCHA = 12;
+    DELETE_ACCOUNT = 13;
+    ERROR = 14;
+    ALGORITHM = 15;
+    IMAGE = 16;
+    SOUND = 17;
+    QUERY = 18;
+    SUBMIT_COMMENT = 19;
+    UP_VOTE = 20;
+    DOWN_VOTE = 21;
+    DELETE_ALGORITHM = 22;
+    CUSTOM = 23;
+    VOTE = 24;
+    REQEST_PROFILE = 25;
+    META = 26;
+    SAVE_ALGORITHM = 27;
   }
   Type type = 1;
   Auth auth = 2;
-  string message = 3;
-  string details = 4;
-  Captcha captcha = 5;
-  Query query = 6;
-  Catalog catalog = 7;
-  Video video = 8;
+  Algorithm algorithm = 3;
+  Image image = 4;
+  Sound sound = 5;
+  Video video = 6;
+  Query query = 7;
+  Catalog catalog = 8;
+  Comment comment = 9;
+  Custom custom = 10;
+  Error error = 11;
+  Vote vote = 12;
+  MetaAlgorithm profile = 13;
+  MetaAlgorithm meta = 14;
+  string message = 15;
+  string details = 16;
+  Captcha captcha = 17;
 }

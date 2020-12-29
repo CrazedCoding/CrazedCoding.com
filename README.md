@@ -1,17 +1,16 @@
 
-<h1>CrazedCoding.com Video Processing Server, and Audio Signal Frequency Prediction Tool, and BIT Master Thesis</h1>
+<h1>CrazedCoding.com Humanization Tool</h1>
 <img src="./default.png">
 <h2>About</h2>
-<p>The sole purpose of this repo is to serve as a platform for the thesis work of the author. So far, it is the culmination of a combination of academic and entrepreneurial projects developed over the past several years.</p>
-</p>The main component is Linux-based python server that is capable of processing video files for visual keywords. It is mainly designed to efficiently (de)serializes messages sent to/from the client/server using Google Protobufs. It has a email based sign-up system, and uses TCP/WebSockets to send/receive messages to/from the client/server. It is written for Python 3.7+ and it's requirements are listed in <a href="./requirements.txt">requirements.txt</a>.</p>
+<p>The sole purpose of this repo is to serve as a platform for the work of a friend of the author. So far, it is the culmination of a combination of academic and entrepreneurial projects developed over the past several years.</p>
+</p>The main component is Linux-based python server. It is mainly designed to efficiently (de)serializes messages sent to/from the client/server using Google Protobufs. It has a email based sign-up system, and uses TCP/WebSockets to send/receive messages to/from the client/server. It is written for Python 3.7+ and it's requirements are listed in <a href="./requirements.txt">requirements.txt</a>.</p>
 <p>The client is written in pure HTML/JavasSript and can be found in the <a href="./www">www</a> folder.</p>
-<p>To use this project for your own domain/server, simply replace all occurances of the string "CrazedCoding" (while preserving the occurance's case) to your own server's domain name.</p>
+<p>To use this project for your own domain/server, simply replace all occurances of the string "CrazedCoding.com" (while preserving the occurance's case) to your own server's domain name.</p>
 <h2>Server Installation and Configuration</h2>
 <p>We've gone through this process quite a few times, and have included a set of useful installation and debugging commands in <a href="https://github.com/CrazedCoding/CrazedCoding.com/blob/master/commands.md">commands.txt</a>. In particular, when setting up the postfix/dovecot email system, the following debug command always comes in useful:</p>
 <code>tail -f /var/log/mail.log</code>
 <br>
 <br>
-<p>Install <a href="https://developer.nvidia.com/cuda-zone">CUDA</a>. <a href="https://www.pugetsystems.com/labs/hpc/The-Best-Way-To-Install-Ubuntu-18-04-with-NVIDIA-Drivers-and-any-Desktop-Flavor-1178/#caution-do-not-use-the-default-ubuntu-1804-server-download">This</a> tuturial might help.</p>
 <p>Install git and clone this repository:</p>
 <code>apt-get install git</code>
 <br>
@@ -33,13 +32,8 @@
 <code>mv ./www/proto/messages_pb2.py ./</code>
 <br>
 <br>
-<p> Follow the guide: <a href="https://pytorch.org/get-started/locally/">How to Install PyTorch</a>:</p>
-<code>sudo apt-get install python3-pip</code>
-<br>
-<code>sudo apt-get install ffmpeg</code>
-<br>
-<br>
 <p>Using python 3.6</p>
+<code>sudo apt install python3-pip</code>
 <code>sudo python3 -m pip install -r requirements.txt</code>
 <br>
 <br>
