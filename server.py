@@ -148,6 +148,8 @@ class WebSocketServerProtocolWithHTTP(websockets.WebSocketServerProtocol):
         server_root = os.path.dirname(os.path.abspath(__file__))
         www_root = os.path.join(server_root,"www")
         algorithms_root = os.path.join(server_root,"algorithms")
+        if not os.path.exists(algorithms_root):
+            os.mkdir(algorithms_root)
         short_path = path[1:]
         www_path = os.path.realpath(os.path.join(www_root, short_path))
 
