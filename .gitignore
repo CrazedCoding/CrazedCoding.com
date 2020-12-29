@@ -2,6 +2,3 @@ __pycache__
 .vscode
 users/*
 deleted/*
-!algorithms
-algorithms/*
-!algorithms/default.json
