@@ -1,6 +1,6 @@
 captcha==0.3
 numpy==1.18.2
-protobuf==3.11.3
+protobuf==3.15.0
 spacy==2.2.4
 torch==1.4.0
 torchvision==0.5.0
